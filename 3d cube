@@ -1,0 +1,98 @@
+import sys
+import os.path
+
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+from OpenGL.GLU import *
+
+print('All libraries and dependencies loaded correctly!')
+
+vertices = (
+    (1, -1, -1),
+    (1, 1, -1),
+    (-1, 1, -1),
+    (-1, -1, -1),
+    (1, -1, 1),
+    (1, 1, 1),
+    (-1, -1, 1),
+    (-1, 1, 1),
+    )
+#need to match order correctly for vertices
+#otherwise jumbles code
+edges = (
+    (0,1),
+    (0,3),
+    (0,4),
+    (2,1),
+    (2,3),
+    (2,7),
+    (6,3),
+    (6,4),
+    (6,7),
+    (5,1),
+    (5,4),
+    (5,7),
+    )
+
+surfaces = (
+    (0,1,2,3),
+    (3,2,7,6),
+    (6,7,5,4),
+    (4,5,1,0),
+    (1,5,7,2),
+    (4,0,3,6)
+    )
+
+colors = (
+    (1,0,0),
+    (0,1,0),
+    (0,0,1),
+    (0,0,0),
+    (1,1,1),
+    (0,1,1),
+    (1,0,0),
+    (0,1,0),
+    (0,0,1),
+    (0,0,0),
+    (1,1,1),
+    (0,1,1),
+    )
+
+window = 0
+width, height = 800, 600
+
+def cube():
+    glBegin(GL_QUADS)
+    
+    for surface in surfaces:
+            x=0
+            for vertex in surface:
+                x+=1
+                glColor3fv(colors[x])
+                glVertex3fv(vertices[vertex])
+    glEnd()
+
+    glBegin(GL_LINES)
+    for edge in edges:
+        for vertex in edge:
+            glVertex3fv(vertices[vertex])
+    glEnd()
+
+def draw():
+    display = width, height
+    gluPerspective(45, (display[0]/display[1]), .00001, 10)
+    glTranslatef(0.0, 0.0, -5)
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    cube()
+    glLoadIdentity() #glLoadIdentity needs to be placed after draw call of object but before swap buffers 
+    glutSwapBuffers()    
+
+#initialization
+glutInit()
+glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
+glutInitWindowSize(width, height)
+glutInitWindowPosition(0, 0)
+window = glutCreateWindow(b'PyOpenGL Test Window')
+glutDisplayFunc(draw)
+glutIdleFunc(draw)
+glutMainLoop()
